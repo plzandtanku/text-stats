@@ -55,7 +55,7 @@ function parseFile(data){
 		}
 	});
 //	console.log(map);
-	console.log(ts.getCommon(map));
+	ts.getTopCommon(map);
 }
 
 function getStats(data) {
