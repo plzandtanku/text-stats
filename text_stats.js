@@ -1,4 +1,5 @@
 let fs = require('fs');
+let ts = require('./text_data');
 let commandLineArgs = require('command-line-args');
 let req = require('request');
 
@@ -14,7 +15,7 @@ if (options.hasOwnProperty("file")) {
 
 	fs.readFile(filename, 'utf8', function(err, data) {
 		if (err) throw err;
-		getStats(data);	
+		parseFile(data);	
 	});
 }
 else {
@@ -28,11 +29,15 @@ else {
 	url = "https://en.wikipedia.org/w/api.php?action=parse&page=The_Simpsons&format=json";
 	req(url, (err, res, body) => {
 		let data = JSON.parse(body).parse.text["*"];
-		parseHTML(data);
+		parseFile(data);
 	});
 }
 
-function parseHTML(data){
+/**
+ * Do some parsing
+ * Keep only alphanumeric characters, but ignore entirely numeric entries
+ **/
+function parseFile(data){
 	data.replace(/>/, "> ");
 	let arr = data.split(" ");
 	arr = arr.filter(function(item) {
@@ -49,7 +54,8 @@ function parseHTML(data){
 			map[item] = 1;
 		}
 	});
-	console.log(map);
+//	console.log(map);
+	console.log(ts.getCommon(map));
 }
 
 function getStats(data) {
