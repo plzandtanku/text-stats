@@ -1,0 +1,24 @@
+{
+  "name": "text-stats",
+  "version": "1.0.0",
+  "description": "Get some information about a text",
+  "main": "text_data.js",
+  "dependencies": {
+    "command-line-args": "^5.0.2",
+    "request": "^2.88.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/plzandtanku/text-stats.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/plzandtanku/text-stats/issues"
+  },
+  "homepage": "https://github.com/plzandtanku/text-stats#readme"
+}
