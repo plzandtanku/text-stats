@@ -1,13 +1,27 @@
 let fs = require('fs');
 let ts = require('./text_data');
 let commandLineArgs = require('command-line-args');
+let commandLineUsage = require('command-line-usage');
 let req = require('request');
 
 const def = [
-	{ name: 'file', alias: 'f', type: String },
+	{ name: 'file', alias: 'f', type: String, typeLabel: '{underline file}', description: 'The text file to read from' },
+	{ name: 'wiki', alias: 'w', type: String, description: 'The wiki article to read from' },
+	{ name: 'help', alias: 'h', defaultOption: true },
 ];
-let options = commandLineArgs(def);
 
+const usage = [
+	{
+		header: 'text-stats.js',
+		content: 'Usage: node text-stats.js [options]'
+	},
+	{
+		header: 'Options',
+		optionList: def,
+	},
+];
+
+let options = commandLineArgs(def);
 
 // get stats for a file
 if (options.hasOwnProperty("file")) {
@@ -18,7 +32,7 @@ if (options.hasOwnProperty("file")) {
 		parseFile(data);	
 	});
 }
-else {
+else if (options.hasOwnProperty("wiki")) {
 	// do stats for a wiki article plain text via API call
 	let url = "https://en.wikipedia.org/w/api.php";
 	let params = {
@@ -31,6 +45,9 @@ else {
 		let data = JSON.parse(body).parse.text["*"];
 		parseFile(data);
 	});
+}
+else {
+	console.log(commandLineUsage(usage));
 }
 
 /**
@@ -58,6 +75,7 @@ function parseFile(data){
 	ts.getTopCommon(map);
 }
 
+// WIP
 function getStats(data) {
 	let arr = data.split(" ");
 	console.log(arr);
