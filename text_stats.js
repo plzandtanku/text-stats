@@ -5,8 +5,9 @@ let commandLineUsage = require('command-line-usage');
 let req = require('request');
 
 const def = [
-	{ name: 'file', alias: 'f', type: String, typeLabel: '{underline file}', description: 'The text file to read from' },
-	{ name: 'wiki', alias: 'w', type: String, description: 'The wiki article to read from' },
+	{ name: 'file', alias: 'f', type: String, typeLabel: "filename", description: 'The text file to read from' },
+	{ name: 'wiki', alias: 'w', type: String, typeLabel: 'article_name', description: 'The wiki article to read from' },
+	{ name: 'debug', alias: 'd', type: Boolean, description: 'Debug flag' },
 	{ name: 'help', alias: 'h', defaultOption: true },
 ];
 
@@ -22,28 +23,32 @@ const usage = [
 ];
 
 let options = commandLineArgs(def);
-
+let debug = options.hasOwnProperty("debug");
 // get stats for a file
 if (options.hasOwnProperty("file")) {
-	let filename = options.file;
+	let fileName = options.file;
 
-	fs.readFile(filename, 'utf8', function(err, data) {
+	fs.readFile(fileName, 'utf8', function(err, data) {
 		if (err) throw err;
-		parseFile(data);	
+		parseData(data);	
 	});
 }
 else if (options.hasOwnProperty("wiki")) {
+	let articleName = options.wiki;
 	// do stats for a wiki article plain text via API call
 	let url = "https://en.wikipedia.org/w/api.php";
+	// params API not working 
 	let params = {
 		action: "parse",
-		page: "The_Simpsons",
+		page: articleName,
 		format: "json",
 	};
-	url = "https://en.wikipedia.org/w/api.php?action=parse&page=The_Simpsons&format=json";
+	// just do URL for now
+	url = "https://en.wikipedia.org/w/api.php?action=parse&page=" + articleName + "&format=json";
 	req(url, (err, res, body) => {
+		if (debug) console.log(url);
 		let data = JSON.parse(body).parse.text["*"];
-		parseFile(data);
+		parseData(data);
 	});
 }
 else {
@@ -54,7 +59,7 @@ else {
  * Do some parsing
  * Keep only alphanumeric characters, but ignore entirely numeric entries
  **/
-function parseFile(data){
+function parseData(data){
 	data.replace(/>/, "> ");
 	let arr = data.split(" ");
 	arr = arr.filter(function(item) {
@@ -63,6 +68,7 @@ function parseFile(data){
 		return regex.test(item) && !regex2.test(item);; 
 	});
 	let map = {};
+	// word count
 	arr.forEach(function(item) {
 		if (map.hasOwnProperty(item)) {
 			map[item]++;
@@ -71,12 +77,10 @@ function parseFile(data){
 			map[item] = 1;
 		}
 	});
-//	console.log(map);
-	ts.getTopCommon(map);
+	//if (debug) console.log(map);
+	ts.getTopCommon(map, 10);
+	console.log(ts.getCommon(map));
+	console.log(ts.getLongest(map));
 }
 
-// WIP
-function getStats(data) {
-	let arr = data.split(" ");
-	console.log(arr);
-}
+
