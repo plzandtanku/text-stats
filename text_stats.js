@@ -70,17 +70,27 @@ function parseData(data){
 	let map = {};
 	// word count
 	arr.forEach(function(item) {
-		if (map.hasOwnProperty(item)) {
-			map[item]++;
+		item = item.toLowerCase();
+		let size = item.length;
+		if (map.hasOwnProperty(size)) {
+			let wordMap = map[size];
+			if (wordMap.hasOwnProperty(item)) wordMap[item]++;
+			else wordMap[item] = 1;
 		}
 		else {
-			map[item] = 1;
+			map[size] = {};
+			map[size][item] = 1;
 		}
 	});
-	//if (debug) console.log(map);
-	ts.getTopCommon(map, 10);
-	console.log(ts.getCommon(map));
-	console.log(ts.getLongest(map));
+	if (debug) console.log(map);
+	Object.keys(map).forEach(function (key){
+		let wordMap = map[key];
+		console.log(key+"----------");
+		ts.getTopCommon(wordMap, 10);
+		console.log(ts.getCommon(wordMap));
+		//console.log(ts.getLongest(wordMap));		
+	});
+
 }
 
 
