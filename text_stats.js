@@ -1,5 +1,5 @@
 let fs = require('fs');
-let ts = require('./text_data');
+let td = require('./text_data');
 let commandLineArgs = require('command-line-args');
 let commandLineUsage = require('command-line-usage');
 let req = require('request');
@@ -24,13 +24,15 @@ const usage = [
 
 let options = commandLineArgs(def);
 let debug = options.hasOwnProperty("debug");
+let map = {};
 // get stats for a file
 if (options.hasOwnProperty("file")) {
 	let fileName = options.file;
 
 	fs.readFile(fileName, 'utf8', function(err, data) {
 		if (err) throw err;
-		parseData(data);	
+		parseData(data);
+		displayStats();
 	});
 }
 else if (options.hasOwnProperty("wiki")) {
@@ -49,12 +51,12 @@ else if (options.hasOwnProperty("wiki")) {
 		if (debug) console.log(url);
 		let data = JSON.parse(body).parse.text["*"];
 		parseData(data);
+		displayStats();
 	});
 }
 else {
 	console.log(commandLineUsage(usage));
 }
-
 /**
  * Do some parsing
  * Keep only alphanumeric characters, but ignore entirely numeric entries
@@ -67,8 +69,9 @@ function parseData(data){
 		let regex2 = /^\d+$/;
 		return regex.test(item) && !regex2.test(item);; 
 	});
-	let map = {};
-	// word count
+	// build maps for word count
+	// we want to group by word lengths
+	// each length will have its own mapping of counts 
 	arr.forEach(function(item) {
 		item = item.toLowerCase();
 		let size = item.length;
@@ -82,15 +85,15 @@ function parseData(data){
 			map[size][item] = 1;
 		}
 	});
+}
+
+function displayStats(){
 	if (debug) console.log(map);
 	Object.keys(map).forEach(function (key){
 		let wordMap = map[key];
-		console.log(key+"----------");
-		ts.getTopCommon(wordMap, 10);
-		console.log(ts.getCommon(wordMap));
-		//console.log(ts.getLongest(wordMap));		
+//		console.log(key+"----------");
+//		td.getTopCommon(wordMap, 10);
+//		console.log(td.getCommon(wordMap));
 	});
-
+	td.getPalindromes(map);
 }
-
-
