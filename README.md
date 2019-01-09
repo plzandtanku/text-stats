@@ -1,5 +1,5 @@
 # text-stats
-Get some information about a text. Can read from a text file or read from wiki article. Currently will do word count and also find the longest word. 
+Get some information about a text. Can read from a text file or read from wiki article (on en.wikipedia.org). Currently will do word count and also find the longest word. 
 
 ```
 text_stats.js
